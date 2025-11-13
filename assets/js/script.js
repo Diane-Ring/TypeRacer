@@ -215,7 +215,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     
     if (startButton) {
-        startButton.addEventListener('click', startTest);
+        // Ensure the click event isn't passed as the preserveInput param
+        startButton.addEventListener('click', function () { startTest(false); });
     }
     
     if (stopButton) {
