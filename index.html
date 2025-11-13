@@ -1,71 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/style.css" />
     <title>TypeRacer</title>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12 text-center my-4">
-                    <h1>TypeRacer</h1>
-                    <button class="btn btn-light mt-3" id="instructions-btn">
-                        <i class="fas fa-info-circle"></i> Instructions
-                    </button>
-                </div>
-            </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 text-center my-4">
+            <h1>TypeRacer</h1>
+            <!-- Use Bootstrap data attributes to open the instructions modal -->
+            <button
+              class="btn btn-light mt-3"
+              id="instructions-btn"
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#instructionsModal"
+            >
+              <i class="fas fa-info-circle"></i> Instructions
+            </button>
+          </div>
         </div>
+      </div>
     </header>
 
     <main>
-        <div class="container my-5">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="input-group mb-3">
-                        <label class="input-group-text" for="difficulty">Select Difficulty</label>
-                        <select class="form-select" id="difficulty">
-                            <option value="easy">Easy</option>
-                            <option value="medium">Medium</option>
-                            <option value="hard">Hard</option>
-                        </select>
-                    </div>
-                    <div class="test-area">
-                        <p class="lead">Test your typing speed by typing the text shown below:</p>
-                        <div class="mb-3 p-3 border" id="sample-text">
-                            <!-- sample text is inserted here using JS -->
-                        </div>
-                    </div>
-                        <div class="mb-3">
-                            <label class="form-label visually-hidden" for="user-input">Type Here</label>
-                            <!-- Allow typing so the test can start on the first keystroke -->
-                            <textarea class="form-control" id="user-input" rows="6" placeholder="Start typing to begin the test"></textarea>
-                        </div>
-                    <div class="mb-3 text-center">
-                        <button class="btn btn-lg btn-outline-orange" id="start-btn">Start</button>
-                        <button class="btn btn-lg btn-outline-orange" id="stop-btn" disabled>Stop</button>
-                        <button class="btn btn-lg btn-outline-orange" id="retry-btn">Retry</button>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div id="results-area" class="text-center">
-                        <h2>Results</h2>
-                        <div>
-                            <p>Level: <span id="level">Easy</span></p>
-                        </div>
-                        <div>
-                            <p>Time: <span id="time">0</span>s</p>
-                        </div>
-                        <div>
-                            <p>WPM: <span id="wpm">0</span></p>
-                        </div>
-                    </div>
-                </div>
+      <!-- Add the instructions modal -->
+      <div
+        class="modal fade"
+        id="instructionsModal"
+        tabindex="-1"
+        aria-labelledby="instructionsModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="instructionsModalLabel">
+                How to use TypeRacer
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
             </div>
+            <div class="modal-body">
+              <p class="mb-2">Follow these steps to take the typing test:</p>
+              <ul>
+                <li>
+                  Select a difficulty (Easy, Medium, Hard) from the dropdown.
+                </li>
+                <li>
+                  Start typing in the "Type Here" box. The test begins
+                  automatically on your first keystroke.
+                </li>
+                <li>
+                  Words you type correctly are highlighted in blue; incorrect
+                  words are highlighted in red.
+                </li>
+                <li>
+                  Press Enter (or click Stop) to finish the test. Shift+Enter
+                  inserts a newline without ending the test.
+                </li>
+                <li>
+                  After finishing, the Results panel shows the elapsed time and
+                  WPM (words per minute).
+                </li>
+                <li>
+                  Click Retry to load a new sample at the same difficulty and
+                  try again.
+                </li>
+              </ul>
+              <p class="mt-2 mb-0"><strong>Notes:</strong></p>
+              <ul>
+                <li>
+                  The textarea is enabled so you can begin typing immediately —
+                  you do not need to click Start.
+                </li>
+                <li>
+                  The Retry button is disabled while a test is running and
+                  re-enabled after you stop the test.
+                </li>
+                <li>
+                  The test measures correctly typed whole words against the
+                  sample text.
+                </li>
+              </ul>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
+      <div class="container my-5">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="input-group mb-3">
+              <label class="input-group-text" for="difficulty"
+                >Select Difficulty</label
+              >
+              <select class="form-select" id="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+            <div class="test-area">
+              <p class="lead">
+                Test your typing speed by typing the text shown below:
+              </p>
+              <div class="mb-3 p-3 border" id="sample-text">
+                <!-- sample text is inserted here using JS -->
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label visually-hidden" for="user-input"
+                >Type Here</label
+              >
+              <!-- Allow typing so the test can start on the first keystroke -->
+              <textarea
+                class="form-control"
+                id="user-input"
+                rows="6"
+                placeholder="Start typing to begin the test"
+              ></textarea>
+            </div>
+            <div class="mb-3 text-center">
+              <button class="btn btn-lg btn-outline-orange" id="start-btn">
+                Start
+              </button>
+              <button
+                class="btn btn-lg btn-outline-orange"
+                id="stop-btn"
+                disabled
+              >
+                Stop
+              </button>
+              <button class="btn btn-lg btn-outline-orange" id="retry-btn">
+                Retry
+              </button>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div id="results-area" class="text-center">
+              <h2>Results</h2>
+              <div>
+                <p>Level: <span id="level">Easy</span></p>
+              </div>
+              <div>
+                <p>Time: <span id="time">0</span>s</p>
+              </div>
+              <div>
+                <p>WPM: <span id="wpm">0</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
     <script
@@ -74,5 +181,5 @@
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/script.js"></script>
-</body>
+  </body>
 </html>
