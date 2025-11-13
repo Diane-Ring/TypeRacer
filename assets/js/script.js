@@ -122,8 +122,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function startTest() {
-        if (!startButton || !stopButton || !retryButton || !userInput) return;
+    function startTest(preserveInput = false) {
+         if (!startButton || !stopButton || !retryButton || !userInput) return;
         
         startTime = new Date();
         testActive = true;
@@ -132,7 +132,9 @@ document.addEventListener('DOMContentLoaded', function () {
         stopButton.disabled = false;
         retryButton.disabled = true;
         userInput.disabled = false;
-        userInput.value = '';
+        if (!preserveInput) {
+            userInput.value = '';
+        }
         userInput.focus();
         
         // Reset word colors
@@ -165,15 +167,21 @@ document.addEventListener('DOMContentLoaded', function () {
         if (startButton && stopButton && retryButton && userInput) {
             startButton.disabled = false;
             stopButton.disabled = true;
-            retryButton.disabled = false;
+            retryButton.disabled = true; // disable retry until test finishes
             userInput.disabled = true;
             userInput.value = '';
+            userInput.focus();
         }
         
+        // Load a new sample sentence for the same difficulty
         updateSampleText();
         
         if (timeDisplay) timeDisplay.textContent = '0';
         if (wpmDisplay) wpmDisplay.textContent = '0';
+        if (levelDisplay && difficultySelect) {
+            const selectedDifficulty = difficultySelect.value;
+            levelDisplay.textContent = selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1);
+        }
     }
 
     function calculateWPM(timeTaken) {
@@ -218,15 +226,26 @@ document.addEventListener('DOMContentLoaded', function () {
         retryButton.addEventListener('click', retryTest);
     }
     
-    // Add input event listener for live feedback
+    // Add input event listener for live feedback and auto-start on first keystroke
     if (userInput) {
+        // If the user types and the test hasn't started, start it and preserve the typed content
         userInput.addEventListener('input', function() {
-            if (testActive) {
-                updateWordColors();
+            if (!testActive) {
+                startTest(true);
+            }
+            updateWordColors();
+        });
+
+        // Stop the test when the user presses Enter (but allow Shift+Enter for newline)
+        userInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey && testActive) {
+                // Prevent inserting a newline and end the test
+                e.preventDefault();
+                stopTest();
             }
         });
     }
-
+    
     // Initialize
     updateSampleText();
 });
