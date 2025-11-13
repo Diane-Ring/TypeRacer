@@ -168,7 +168,8 @@ document.addEventListener('DOMContentLoaded', function () {
             startButton.disabled = false;
             stopButton.disabled = true;
             retryButton.disabled = true; // disable retry until test finishes
-            userInput.disabled = true;
+            // Enable input so user can start typing (auto-start on first keystroke)
+            userInput.disabled = false;
             userInput.value = '';
             userInput.focus();
         }
@@ -176,12 +177,16 @@ document.addEventListener('DOMContentLoaded', function () {
         // Load a new sample sentence for the same difficulty
         updateSampleText();
         
+        // Reset Results display
         if (timeDisplay) timeDisplay.textContent = '0';
         if (wpmDisplay) wpmDisplay.textContent = '0';
         if (levelDisplay && difficultySelect) {
             const selectedDifficulty = difficultySelect.value;
             levelDisplay.textContent = selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1);
         }
+
+        // Reset live word highlighting
+        updateWordColors();
     }
 
     function calculateWPM(timeTaken) {
