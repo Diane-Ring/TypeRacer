@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
         "The only thing we have to fear is fear itself."
     ];
 
+    // Get all DOM elements
     const difficultySelect = document.getElementById('difficulty');
     const sampleTextDiv = document.getElementById('sample-text');
     const startButton = document.getElementById('start-btn');
@@ -31,6 +32,16 @@ document.addEventListener('DOMContentLoaded', function () {
     let endTime;
     let currentSampleText = '';
     let sampleWords = [];
+    let testActive = false;
+
+    // Add difficulty options to select
+    if (difficultySelect) {
+        difficultySelect.innerHTML = `
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+        `;
+    }
 
     function getRandomText(textArray) {
         const randomIndex = Math.floor(Math.random() * textArray.length);
@@ -38,6 +49,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateSampleText() {
+        if (!difficultySelect) return;
+        
         let selectedDifficulty = difficultySelect.value;
         let selectedText;
 
@@ -55,6 +68,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function displaySampleTextWithSpans() {
+        if (!sampleTextDiv) return;
+        
         // Clear the sample text div
         sampleTextDiv.innerHTML = '';
         
@@ -74,6 +89,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateWordColors() {
+        if (!userInput) return;
+        
         const userText = userInput.value.trim();
         const userWords = userText.split(/\s+/);
         
@@ -82,20 +99,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const wordSpan = document.getElementById(`word-${index}`);
             if (wordSpan) {
                 wordSpan.style.color = '';
-                wordSpan.style.backgroundColor = '';
+                wordSpan.style.fontWeight = '';
             }
         });
         
         // Color words based on user input
         userWords.forEach((userWord, index) => {
-            if (index < sampleWords.length) {
+            if (index < sampleWords.length && userWord !== '') {
                 const wordSpan = document.getElementById(`word-${index}`);
                 if (wordSpan) {
                     if (userWord === sampleWords[index]) {
                         // Correct word - blue
                         wordSpan.style.color = '#007bff';
                         wordSpan.style.fontWeight = 'bold';
-                    } else if (userWord !== '') {
+                    } else {
                         // Incorrect word - red
                         wordSpan.style.color = '#dc3545';
                         wordSpan.style.fontWeight = 'bold';
@@ -106,12 +123,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function startTest() {
+        if (!startButton || !stopButton || !retryButton || !userInput) return;
+        
         startTime = new Date();
+        testActive = true;
+        
         startButton.disabled = true;
         stopButton.disabled = false;
         retryButton.disabled = true;
         userInput.disabled = false;
-        userInput.value = ''; // Clear the input area
+        userInput.value = '';
         userInput.focus();
         
         // Reset word colors
@@ -119,77 +140,93 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function stopTest() {
+        if (!testActive) return;
+        
         endTime = new Date();
-        const timeTaken = (endTime - startTime) / 1000; // time in seconds
+        const timeTaken = (endTime - startTime) / 1000;
         const wpm = calculateWPM(timeTaken);
         
+        testActive = false;
         displayResults(timeTaken, wpm);
 
-        startButton.disabled = false;
-        stopButton.disabled = true;
-        retryButton.disabled = false;
-        userInput.disabled = true;
+        if (startButton && stopButton && retryButton && userInput) {
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            retryButton.disabled = false;
+            userInput.disabled = true;
+        }
     }
 
     function retryTest() {
-        // Reset test state
         startTime = null;
         endTime = null;
+        testActive = false;
         
-        // Reset buttons
-        startButton.disabled = false;
-        stopButton.disabled = true;
-        retryButton.disabled = false;
+        if (startButton && stopButton && retryButton && userInput) {
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            retryButton.disabled = false;
+            userInput.disabled = true;
+            userInput.value = '';
+        }
         
-        // Clear and disable user input
-        userInput.disabled = true;
-        userInput.value = '';
-        userInput.placeholder = "Click the start button to begin the test";
-        
-        // Generate new text and reset colors
         updateSampleText();
         
-        // Reset displays
-        timeDisplay.textContent = '0';
-        wpmDisplay.textContent = '0';
+        if (timeDisplay) timeDisplay.textContent = '0';
+        if (wpmDisplay) wpmDisplay.textContent = '0';
     }
 
     function calculateWPM(timeTaken) {
-        const sampleText = currentSampleText.trim();
+        if (!userInput) return 0;
+        
         const userText = userInput.value.trim();
-        const sampleWordsArray = sampleText.split(" ");
         const userWords = userText.split(" ");
-    
+        
         let correctWords = 0;
-        for (let i = 0; i < userWords.length; i++) {
-            if (userWords[i] === sampleWordsArray[i]) {
+        for (let i = 0; i < userWords.length && i < sampleWords.length; i++) {
+            if (userWords[i] === sampleWords[i]) {
                 correctWords++;
             }
         }
-    
+        
         return Math.round((correctWords / timeTaken) * 60);
     }
 
     function displayResults(timeTaken, wpm) {
-        timeDisplay.textContent = timeTaken.toFixed(2);
-        wpmDisplay.textContent = wpm;
-        const selectedDifficulty = difficultySelect.value;
-        levelDisplay.textContent = selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1);
+        if (timeDisplay) timeDisplay.textContent = timeTaken.toFixed(2);
+        if (wpmDisplay) wpmDisplay.textContent = wpm;
+        if (levelDisplay && difficultySelect) {
+            const selectedDifficulty = difficultySelect.value;
+            levelDisplay.textContent = selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1);
+        }
     }
 
     // Event listeners
-    difficultySelect.addEventListener('change', updateSampleText);
-    startButton.addEventListener('click', startTest);
-    stopButton.addEventListener('click', stopTest);
-    retryButton.addEventListener('click', retryTest);
+    if (difficultySelect) {
+        difficultySelect.addEventListener('change', updateSampleText);
+    }
+    
+    if (startButton) {
+        startButton.addEventListener('click', startTest);
+    }
+    
+    if (stopButton) {
+        stopButton.addEventListener('click', stopTest);
+    }
+    
+    if (retryButton) {
+        retryButton.addEventListener('click', retryTest);
+    }
     
     // Add input event listener for live feedback
-    userInput.addEventListener('input', function() {
-        if (!startButton.disabled) { // Only update colors when test is active
-            updateWordColors();
-        }
-    });
+    if (userInput) {
+        userInput.addEventListener('input', function() {
+            if (testActive) {
+                updateWordColors();
+            }
+        });
+    }
 
-    // Initialize with a random text from the default difficulty level
+    // Initialize
     updateSampleText();
 });
