@@ -1,7 +1,6 @@
-/* color ff8400 */
-
 /* fonts */
-@import url("https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+
+@import url("https://fonts.googleapis.com/css2?family=Alegreya:wght@400;700&family=Nunito:wght@400;700&display=swap");
 
 body {
     font-family: Nunito, sans-serif;
@@ -30,7 +29,7 @@ header {
 }
 
 
-/* results-area */
+/* results area */
 
 #results-area {
     box-shadow: 0 0 10px #ff8400;
